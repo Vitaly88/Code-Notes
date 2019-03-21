@@ -7,5 +7,5 @@ posts.forEach(function(integer) {
 });
 
 // expected output: 1
-// expected output: 2
 // expected output: 3
+// expected output: 2
