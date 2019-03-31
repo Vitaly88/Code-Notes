@@ -1,0 +1,57 @@
+const { GraphQLServer } = require('graphql-yoga');
+const mongoose = require('mongoose');
+const uuid = require('uuid');
+mongoose.connect('mongodb://localhost/graphqlTutorial',  { useNewUrlParser: true });
+
+const authorSchema = new mongoose.Schema ({
+  id: {type: String, default: uuid.v1},
+  name: String,
+  age: Number,
+  books: [String]
+});
+
+const Author = mongoose.model('Author', authorSchema);
+
+// 1 Graphql SchemaauthorSchema
+
+const resolvers = {
+  Query: {
+      author: (root, {id}) => {}// authors.filter(authors => authors.id === id)
+  },
+  Mutation: {
+    deleteAuthor: (root, {id}) => {
+      return Author.remove({id: id})
+    },
+    updateAuthor: (root, {id, age, name, books}) => {
+     return Author.findOneAndUpdate({id: id, age: age, name: name, books: books})
+   }
+  }
+};
+
+// runs a server and bundles the schema and the resolvers
+const server = new GraphQLServer({
+  typeDefs: `type authors {
+  id: String,
+  age: Int,
+  name: String,
+  books: [String]
+}
+
+type Query {
+author(id: String!): [authors!]
+}
+
+type Mutation{
+  deleteAuthor(id: String!): authors,
+  updateAuthor(id: String, age: Int, name: String, books: [String]): authors
+}`,
+  
+  resolvers,
+});
+
+const connection = mongoose.connection;
+
+connection.once('open', () => {
+  console.log('connection to database was successful');
+})
+server.start(() => console.log(`Server is running on http://localhost:4000`))
