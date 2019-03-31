@@ -30,7 +30,22 @@ const resolvers = {
 
 // runs a server and bundles the schema and the resolvers
 const server = new GraphQLServer({
-  typeDefs: `./src/schema.graphql`,
+  typeDefs: 
+  
+  `type authors {
+  id: String,
+  age: Int,
+  name: String,
+  books: [String]
+}
+
+type Query {
+author(id: String!): [authors!]
+}
+
+type Mutation{
+  addAuthor(name: String, age: Int, books: [String]): authors,
+}`,
   resolvers,
 });
 
